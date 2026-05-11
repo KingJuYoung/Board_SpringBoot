@@ -14,6 +14,24 @@ public class BoardService {
         return dao.getList();
     }
 
+    public java.util.Map<String, Object> getBoardListWithPaging(int page, int size, String searchTerm) {
+        int start = (page - 1) * size + 1;
+        int end = page * size;
+
+        java.util.Map<String, Object> params = new java.util.HashMap<>();
+        params.put("start", start);
+        params.put("end", end);
+        params.put("searchTerm", searchTerm);
+
+        java.util.List<BoardDTO> list = dao.getListPage(params);
+        int totalCount = dao.countPosts(searchTerm);
+
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        result.put("list", list);
+        result.put("totalCount", totalCount);
+        return result;
+    }
+
     public BoardDTO getDetail(Long seq) {
         return dao.getDetail(seq);
     }

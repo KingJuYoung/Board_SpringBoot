@@ -17,6 +17,14 @@ public class BoardController {
         return ResponseEntity.ok(service.getList());
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<java.util.Map<String, Object>> getBoardsPaged(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "searchTerm", required = false) String searchTerm) {
+        return ResponseEntity.ok(service.getBoardListWithPaging(page, size, searchTerm));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<BoardDTO> getBoard(@PathVariable("id") Long id) {
         BoardDTO board = service.getDetail(id);
@@ -29,7 +37,10 @@ public class BoardController {
 
     @PostMapping
     public ResponseEntity<String> createBoard(@RequestBody BoardDTO data) {
-        int result = service.postWrite(data);
+        System.out.println(data.getContents()+"dfsaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        data.setWriter("임시");
+    	int result = service.postWrite(data);
+        
         if (result > 0) {
             return ResponseEntity.ok("Success");
         } else {

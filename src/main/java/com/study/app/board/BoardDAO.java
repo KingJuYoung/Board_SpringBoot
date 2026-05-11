@@ -15,6 +15,14 @@ public class BoardDAO {
         return db.selectList("Board.getList");
     }
 
+    public List<BoardDTO> getListPage(java.util.Map<String, Object> params) {
+        return db.selectList("Board.getListPage", params);
+    }
+
+    public int countPosts(String searchTerm) {
+        return db.selectOne("Board.countPosts", searchTerm);
+    }
+
     public BoardDTO getDetail(Long seq) {
         return db.selectOne("Board.getDetail", seq);
     }

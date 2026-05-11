@@ -4,35 +4,51 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="Board">
-  <select id="getList" resultType="com.study.app.board.BoardDTO">
-        select * from posts order by seq desc
-  </select>
 
-  <select id="getStartEnd" resultType="com.study.app.board.BoardDTO">
-        select * from (
-    select a.*, rownum rnum from (
-        select * from posts order by seq desc
-    ) a where #{end} >= rownum
-) where rnum >= #{start}
-  </select>
+    <select id="getList" resultType="com.study.app.board.BoardDTO">
+        SELECT * FROM BOARD ORDER BY seq DESC
+    </select>
 
-  <select id="countPosts" resultType="int">
-        select count(*) from posts
-  </select>
+    <select id="getListPage" resultType="com.study.app.board.BoardDTO">
+        SELECT * FROM (
+            SELECT a.*, ROWNUM rnum FROM (
+                SELECT * FROM BOARD 
+                <where>
+                    <if test="searchTerm != null and searchTerm != ''">
+                        (title LIKE '%' || #{searchTerm} || '%' OR writer LIKE '%' || #{searchTerm} || '%')
+                    </if>
+                </where>
+                ORDER BY seq DESC
+            ) a WHERE ROWNUM &lt;= #{end}
+        ) WHERE rnum &gt;= #{start}
+    </select>
 
-  <insert id ="postWrite">
-        insert into posts values(posts_seq.nextval,#{writer},#{title},#{contents},0,sysdate)
-  </insert>
+    <select id="countPosts" resultType="int">
+        SELECT COUNT(*) FROM BOARD
+        <where>
+            <if test="searchTerm != null and searchTerm != ''">
+                (title LIKE '%' || #{searchTerm} || '%' OR writer LIKE '%' || #{searchTerm} || '%')
+            </if>
+        </where>
+    </select>
 
-  <select id="getDetail" resultType="com.study.app.board.BoardDTO">
-        select * from posts where seq=#{seq}
-  </select>
+    <select id="getDetail" resultType="com.study.app.board.BoardDTO">
+        SELECT * FROM BOARD WHERE seq = #{seq}
+    </select>
 
-  <update id="detailUpdate">
-        update posts set title=#{title}, contents=#{contents} where seq=#{seq}
-  </update>
+    <insert id="postWrite">
+        INSERT INTO BOARD (seq, writer, title, contents, view_count, write_date)
+        VALUES (board_seq.nextval, #{writer}, #{title}, #{contents}, 0, sysdate)
+    </insert>
 
-  <delete id="deleteDetail">
-        delete from posts where seq=#{seq}
-  </delete>
+    <update id="detailUpdate">
+        UPDATE BOARD 
+        SET title = #{title}, contents = #{contents} 
+        WHERE seq = #{seq}
+    </update>
+
+    <delete id="deleteDetail">
+        DELETE FROM BOARD WHERE seq = #{seq}
+    </delete>
+
 </mapper>
